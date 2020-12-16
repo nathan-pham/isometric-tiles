@@ -58,7 +58,7 @@ const drawMap = () => {
         (i - j) * tileH + offsetX,
         (i + j) * tileW + offsetY // not based on math lmao
       )
-
+      // console.log(player)
       if(player.x == i && player.y == j) {
         block(player.appearance,
           (i - j) * tileH + offsetX,
