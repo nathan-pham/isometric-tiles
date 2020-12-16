@@ -12,18 +12,31 @@ const map = [
   [12, 12, 12, 17, 17, 17],
 ]
 
+// 17 = lave
+// 12 = bedrock
+// 0  = stone
+// 51 = white wwool
+
 const size = 40
-const offsetX = window.innerWidth / 2
-const offsetY = window.innerHeight / 2
+const tileSize = {
+  x: 32,
+  y: 32
+}
 
-const init = async () => {
-  const files = await generateAssets([ "isometric.png" ])
-  const blocks = generateBlocks()
+let offsetX = window.innerWidth / 2
+let offsetY = window.innerHeight / 2
 
-  const tileSize = {
-    x: 32,
-    y: 32
-  }
+let files, blocks
+
+let player = {
+  x: 0,
+  y: 0,
+  appearance: 51
+}
+
+const drawMap = () => {
+  ctx.fillStyle = "#fff"
+  ctx.fillRect(0, 0, window.innerWidth, window.innerHeight)
 
   const block = (i, x, y) => {
     let chosen = blocks[i]
@@ -33,21 +46,53 @@ const init = async () => {
       x, y, size, size
     )
   }
-  
-  // block("dirt")  
+
+  let tileH = (size - 8) / 2
+  let tileW = (size - 8) / 4
 
   for(let i = 0; i < map.length; i++) {
     for(let j = 0; j < map[i].length; j++) {
       let tile = map[i][j]
       
       block(tile, 
-        (i - j) * (size - 8) / 2 + offsetX,
-        (i + j) * (size - 8) / 4 + offsetY // not based on math lmao
+        (i - j) * tileH + offsetX,
+        (i + j) * tileW + offsetY // not based on math lmao
       )
-    }
-  }
 
+      if(player.x == i && player.y == j) {
+        block(player.appearance,
+          (i - j) * tileH + offsetX,
+          (i + j) * tileH / 2 + offsetY - tileH - 6
+        )
+      }
+    }
+  } 
 }
+
+const init = async () => {
+  files = await generateAssets([ "isometric.png" ])
+  blocks = generateBlocks()
+
+  drawMap()
+}
+
+window.addEventListener("keydown", e => {
+  switch(e.key) {
+    case "a":
+      player.x--
+      break
+    case "d":
+      player.x++
+      break
+    case "w":
+      player.y--
+      break
+    case "s":
+      player.y++
+      break
+  }
+  drawMap()
+})
 
 resize(canvas)
 init()
